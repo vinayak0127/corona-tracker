@@ -9,6 +9,14 @@ function App() {
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState("worldwide");
   const [countryInfo, setCountryInfo] = useState({});
+
+  useEffect(() => {
+    fetch("https://disease.sh/v3/covid-19/all/")
+      .then((response) => response.json())
+      .then((data) => {
+        setCountryInfo(data);
+      });
+  });
   useEffect(() => {
     const getCountriesData = async () => {
       await fetch("https://disease.sh/v3/covid-19/countries")
@@ -29,7 +37,7 @@ function App() {
     setCountry(countryCode);
 
     const url =
-      countryCode === "wordlwide"
+      countryCode === "worldwide"
         ? "https://disease.sh/v3/covid-19/all/"
         : `https://disease.sh/v3/covid-19/countries/${countryCode}`;
     await fetch(url)
@@ -62,9 +70,21 @@ function App() {
 
         {/* infoboxes */}
         <div className="app_stats">
-          <InfoBox title="Coronavirus cases" cases={4000000} total={2000} />
-          <InfoBox title="Recovered cases" cases={4000000} total={3000} />
-          <InfoBox title="Death cases" cases={4000000} total={4000} />
+          <InfoBox
+            title="Coronavirus cases"
+            cases={countryInfo.todayCases}
+            total={countryInfo.cases}
+          />
+          <InfoBox
+            title="Recovered cases"
+            cases={countryInfo.todayRecovered}
+            total={countryInfo.recovered}
+          />
+          <InfoBox
+            title="Death cases"
+            cases={countryInfo.todayDeaths}
+            total={countryInfo.deaths}
+          />
         </div>
 
         {/* map */}
