@@ -1,15 +1,15 @@
-import { FormControl, Select, MenuItem } from "@material-ui/core";
-import { useState, useEffect } from "react";
+import { CardContent, FormControl, MenuItem, Card } from "@material-ui/core";
+import { React, useState, useEffect } from "react";
 import "./App.css";
+import Select from "@material-ui/core/Select";
+import InfoBox from "./InfoBox";
+import Map from "./Map";
 
 function App() {
-  //usestate
   const [countries, setCountries] = useState([]);
-  const [Worldcountry, setCountry] = useState("Worldwide");
-  //https://disease.sh/v3/covid-19/countries
-  //useeffect to pull api = Runs a piece of code based on given condition
+  const [country, setCountry] = useState("worldwide");
+  const [countryInfo, setCountryInfo] = useState({});
   useEffect(() => {
-    //async -> send request ,wait for it to do smthingwith
     const getCountriesData = async () => {
       await fetch("https://disease.sh/v3/covid-19/countries")
         .then((response) => response.json())
@@ -18,55 +18,65 @@ function App() {
             name: country.country,
             value: country.countryInfo.iso2,
           }));
-
           setCountries(countries);
         });
     };
-    setCountry();
     getCountriesData();
   }, []);
 
   const onCountryChange = async (event) => {
     const countryCode = event.target.value;
-    console.log("countrycode---------->", countryCode);
+    setCountry(countryCode);
+
+    const url =
+      countryCode === "wordlwide"
+        ? "https://disease.sh/v3/covid-19/all/"
+        : `https://disease.sh/v3/covid-19/countries/${countryCode}`;
+    await fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        setCountry(countryCode);
+        setCountryInfo(data);
+      });
+    //https://disease.sh/v3/covid-19/all/
+    //https://disease.sh/v3/covid-19/countries/[COUNTRY_CODE]
   };
   return (
     <div className="App">
-      <div className="app_header">
-        <h1>Covid 19 Tracker </h1>
-        <FormControl className="app_dropdown">
-          <Select
-            varient="outlined"
-            onChange={onCountryChange}
-            value={Worldcountry}
-          >
-            {/* Loop thru all the country and show in drop down lis tof the option */}
-            {/* use states */}
-            <MenuItem value="worldwide">Worlwide</MenuItem>
-            {countries.map((country) => (
-              <MenuItem value={country.value}>{country.name}</MenuItem>
-            ))}
-            {/* 
-            <MenuItem value="worldwide">option 1</MenuItem>
-            <MenuItem value="worldwide">option 2</MenuItem>
-            <MenuItem value="worldwide">option 3</MenuItem>
-            <MenuItem value="worldwide">option 4</MenuItem> */}
-          </Select>
-        </FormControl>
+      <div className="app_left">
+        <div className="app_header">
+          <h1>Covid 19 Tracker </h1>
+          <FormControl className="app_dropdown">
+            <Select
+              variant="outlined"
+              onChange={onCountryChange}
+              value={country}
+            >
+              <MenuItem value="worldwide">Worlwide</MenuItem>
+              {countries.map((country) => (
+                <MenuItem value={country.value}>{country.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+
+        {/* infoboxes */}
+        <div className="app_stats">
+          <InfoBox title="Coronavirus cases" cases={4000000} total={2000} />
+          <InfoBox title="Recovered cases" cases={4000000} total={3000} />
+          <InfoBox title="Death cases" cases={4000000} total={4000} />
+        </div>
+
+        {/* map */}
+        <Map />
       </div>
-      {/* Header
-
-      Title + Select input dropdown field
-//1:28:00
-      InfoBoxs
-
-      InfoBoxs
-
-      Table
-
-      Graph 
-
-      Map  */}
+      <Card className="app_right">
+        <CardContent>
+          <h3>Live Cases By Country</h3>
+          {/* table */}
+          <h3>Worldwide New Cases</h3>
+        </CardContent>
+      </Card>
     </div>
   );
 }

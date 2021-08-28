@@ -1,8 +1,28 @@
-*{
-    margin: 0;
+* {
+  margin: 0;
 }
-.app_header{
-    display: flex;
-    margin-bottom: 20px;
-    justify-content: space-between;
+body {
+  background-color: beige;
+}
+.App {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 20px;
+}
+.app_header {
+  display: flex;
+  margin-bottom: 20px;
+  justify-content: space-between;
+}
+.app_stats {
+  display: flex;
+  justify-content: space-between;
+}
+.app_left{
+    flex: 0.9;
+}
+@media (max-width: 990px) {
+  .App {
+    flex-direction: column;
+  }
 }
