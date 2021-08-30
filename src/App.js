@@ -6,43 +6,44 @@ import InfoBox from "./InfoBox";
 import Map from "./Map";
 import Table from "./Table";
 import { sortData } from "./util";
+import LineGraph from "./LineGraph";
 
 function App() {
-  const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState("worldwide");
   const [countryInfo, setCountryInfo] = useState({});
+  const [countries, setCountries] = useState([]);
   const [tableData, setTableData] = useState([]);
   useEffect(() => {
-    fetch("https://disease.sh/v3/covid-19/all/")
+    fetch("https://disease.sh/v3/covid-19/all")
       .then((response) => response.json())
       .then((data) => {
         setCountryInfo(data);
       });
-  });
+  }, []);
   useEffect(() => {
     const getCountriesData = async () => {
-      await fetch("https://disease.sh/v3/covid-19/countries")
+      fetch("https://disease.sh/v3/covid-19/countries")
         .then((response) => response.json())
         .then((data) => {
           const countries = data.map((country) => ({
             name: country.country,
             value: country.countryInfo.iso2,
           }));
-          const sortedData = sortData(data);
+          let sortedData = sortData(data);
           setCountries(countries);
           setTableData(sortedData);
         });
     };
+
     getCountriesData();
   }, []);
 
-  const onCountryChange = async (event) => {
-    const countryCode = event.target.value;
-    setCountry(countryCode);
+  const onCountryChange = async (e) => {
+    const countryCode = e.target.value;
 
     const url =
       countryCode === "worldwide"
-        ? "https://disease.sh/v3/covid-19/all/"
+        ? "https://disease.sh/v3/covid-19/all"
         : `https://disease.sh/v3/covid-19/countries/${countryCode}`;
     await fetch(url)
       .then((response) => response.json())
@@ -50,8 +51,6 @@ function App() {
         setCountry(countryCode);
         setCountryInfo(data);
       });
-    //https://disease.sh/v3/covid-19/all/
-    //https://disease.sh/v3/covid-19/countries/[COUNTRY_CODE]
   };
   return (
     <div className="App">
@@ -64,9 +63,13 @@ function App() {
               onChange={onCountryChange}
               value={country}
             >
-              <MenuItem className="menu" value="worldwide">Worlwide</MenuItem>
+              <MenuItem className="menu" value="worldwide">
+                Worlwide
+              </MenuItem>
               {countries.map((country) => (
-                <MenuItem className="menu" value={country.value}>{country.name}</MenuItem>
+                <MenuItem className="menu" value={country.value}>
+                  {country.name}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -101,6 +104,7 @@ function App() {
           <Table countries={tableData} />
 
           <h3>Worldwide New Cases</h3>
+          <LineGraph />
         </CardContent>
       </Card>
     </div>
