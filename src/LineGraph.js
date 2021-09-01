@@ -63,7 +63,7 @@ const buildChartData = (data, casesType) => {
   return chartData;
 };
 
-function LineGraph({ casesType = "cases" }) {
+function LineGraph({ casesType }) {
   const [data, setData] = useState({});
 
   useEffect(() => {
@@ -90,8 +90,8 @@ function LineGraph({ casesType = "cases" }) {
           data={{
             datasets: [
               {
-                backgroundColor: "#758283",
-                borderColor: "#DE4839",
+                backgroundColor: "rgba(204, 16, 52, 0.5)",
+                borderColor: "#CC1034",
                 data: data,
               },
             ],
